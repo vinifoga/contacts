@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:contacts/components/icon_button_text.dart';
 import 'package:contacts/helpers/contact_helper.dart';
 import 'package:contacts/ui/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -98,16 +100,55 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: () {
-        _showContactPage(contact: contacts[index]);
+        _showOption(context, index);
       },
     );
+  }
+
+  void _showOption(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButtonText(
+                      icon: Icon(Icons.phone),
+                      text: "Ligar",
+                      function: () {
+                        launch("tel:${contacts[index].phone}");
+                        Navigator.pop(context);
+                      },
+                    ),
+                    IconButtonText(icon: Icon(Icons.edit), text: "Editar", function: () {
+                      Navigator.pop(context);
+                      _showContactPage(contact: contacts[index]);
+                    },),
+                    IconButtonText(icon: Icon(Icons.delete), text: "Excluir", function: () {
+                      helper.deleteContact(contacts[index].id ?? contacts[index].id!);
+                      setState(() {
+                        contacts.removeAt(index);
+                        Navigator.pop(context);
+                      });
+                    },),
+                  ],
+                ),
+              );
+            },
+            onClosing: () {},
+          );
+        });
   }
 
   void _showContactPage({Contact? contact}) async {
     final recContact = await Navigator.push(context,
         MaterialPageRoute(builder: (context) => ContactPage(contact: contact)));
-    if(recContact != null){
-      if(contact != null){
+    if (recContact != null) {
+      if (contact != null) {
         await helper.updateContact(recContact);
       } else {
         await helper.saveContact(recContact);
@@ -116,7 +157,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _getAllContacts(){
+  void _getAllContacts() {
     helper.getAllContact().then((list) {
       setState(() {
         contacts = list;

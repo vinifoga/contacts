@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:contacts/components/icon_button_text.dart';
 import 'package:contacts/helpers/contact_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ContactPage extends StatefulWidget {
   final Contact? contact;
@@ -75,6 +77,9 @@ class _ContactPageState extends State<ContactPage> {
                                 as ImageProvider),
                   ),
                 ),
+                onTap: () {
+                  _showImageOptions(context);
+                },
               ),
               TextField(
                 controller: _nameController,
@@ -146,5 +151,50 @@ class _ContactPageState extends State<ContactPage> {
     } else {
       return Future.value(true);
     }
+  }
+
+  void _showImageOptions(BuildContext context) {
+    final ImagePicker _picker = ImagePicker();
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButtonText(
+                      icon: const Icon(Icons.image),
+                      text: "Galeria",
+                      function: () async {
+                        final XFile? image = await _picker.pickImage(
+                            source: ImageSource.gallery);
+                        setState(() {
+                          _editedContact?.img = image?.path;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                    IconButtonText(
+                      icon: const Icon(Icons.camera_alt),
+                      text: "Camera",
+                      function: () async {
+                        final XFile? image =
+                            await _picker.pickImage(source: ImageSource.camera);
+                        setState(() {
+                          _editedContact?.img = image?.path;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+            onClosing: () {},
+          );
+        });
   }
 }
