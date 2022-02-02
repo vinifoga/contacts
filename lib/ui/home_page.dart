@@ -31,8 +31,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         actions: [
           PopupMenuButton<OrderOptions>(
-            itemBuilder: (context) =>
-            <PopupMenuEntry<OrderOptions>>[
+            itemBuilder: (context) => <PopupMenuEntry<OrderOptions>>[
               const PopupMenuItem<OrderOptions>(
                 child: Text("Ordernar de A-Z"),
                 value: OrderOptions.orderAz,
@@ -43,8 +42,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
             onSelected: _orderList,
-
-
           ),
         ],
         title: const Text("Contacts"),
@@ -73,7 +70,7 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       child: Card(
         child: Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
               Container(
@@ -82,10 +79,11 @@ class _HomePageState extends State<HomePage> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                      image: contacts[index].img != null
-                          ? FileImage(File(contacts[index].img!))
-                          : const AssetImage("images/user.png")
-                      as ImageProvider),
+                    image: contacts[index].img != null
+                        ? FileImage(File(contacts[index].img!))
+                        : const AssetImage("images/user.png") as ImageProvider,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               Padding(
@@ -145,19 +143,25 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                     IconButtonText(
-                      icon: Icon(Icons.edit), text: "Editar", function: () {
-                      Navigator.pop(context);
-                      _showContactPage(contact: contacts[index]);
-                    },),
-                    IconButtonText(
-                      icon: Icon(Icons.delete), text: "Excluir", function: () {
-                      helper.deleteContact(
-                          contacts[index].id ?? contacts[index].id!);
-                      setState(() {
-                        contacts.removeAt(index);
+                      icon: Icon(Icons.edit),
+                      text: "Editar",
+                      function: () {
                         Navigator.pop(context);
-                      });
-                    },),
+                        _showContactPage(contact: contacts[index]);
+                      },
+                    ),
+                    IconButtonText(
+                      icon: Icon(Icons.delete),
+                      text: "Excluir",
+                      function: () {
+                        helper.deleteContact(
+                            contacts[index].id ?? contacts[index].id!);
+                        setState(() {
+                          contacts.removeAt(index);
+                          Navigator.pop(context);
+                        });
+                      },
+                    ),
                   ],
                 ),
               );

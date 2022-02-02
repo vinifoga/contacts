@@ -61,7 +61,7 @@ class _ContactPageState extends State<ContactPage> {
           backgroundColor: Colors.red,
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               GestureDetector(
@@ -71,10 +71,12 @@ class _ContactPageState extends State<ContactPage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: _editedContact?.img != null
-                            ? FileImage(File(_editedContact!.img!))
-                            : const AssetImage("images/user.png")
-                                as ImageProvider),
+                      image: _editedContact?.img != null
+                          ? FileImage(File(_editedContact!.img!))
+                          : const AssetImage("images/user.png")
+                              as ImageProvider,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 onTap: () {
