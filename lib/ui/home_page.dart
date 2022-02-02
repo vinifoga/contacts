@@ -6,6 +6,8 @@ import 'package:contacts/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum OrderOptions { orderAz, orderZa }
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -27,6 +29,24 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          PopupMenuButton<OrderOptions>(
+            itemBuilder: (context) =>
+            <PopupMenuEntry<OrderOptions>>[
+              const PopupMenuItem<OrderOptions>(
+                child: Text("Ordernar de A-Z"),
+                value: OrderOptions.orderAz,
+              ),
+              const PopupMenuItem<OrderOptions>(
+                child: Text("Ordernar de Z-A"),
+                value: OrderOptions.orderZa,
+              ),
+            ],
+            onSelected: _orderList,
+
+
+          ),
+        ],
         title: const Text("Contacts"),
         backgroundColor: Colors.red,
         centerTitle: true,
@@ -65,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                       image: contacts[index].img != null
                           ? FileImage(File(contacts[index].img!))
                           : const AssetImage("images/user.png")
-                              as ImageProvider),
+                      as ImageProvider),
                 ),
               ),
               Padding(
@@ -124,12 +144,15 @@ class _HomePageState extends State<HomePage> {
                         Navigator.pop(context);
                       },
                     ),
-                    IconButtonText(icon: Icon(Icons.edit), text: "Editar", function: () {
+                    IconButtonText(
+                      icon: Icon(Icons.edit), text: "Editar", function: () {
                       Navigator.pop(context);
                       _showContactPage(contact: contacts[index]);
                     },),
-                    IconButtonText(icon: Icon(Icons.delete), text: "Excluir", function: () {
-                      helper.deleteContact(contacts[index].id ?? contacts[index].id!);
+                    IconButtonText(
+                      icon: Icon(Icons.delete), text: "Excluir", function: () {
+                      helper.deleteContact(
+                          contacts[index].id ?? contacts[index].id!);
                       setState(() {
                         contacts.removeAt(index);
                         Navigator.pop(context);
@@ -162,6 +185,31 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         contacts = list;
       });
+    });
+  }
+
+  void _orderList(OrderOptions result) {
+    setState(() {
+      switch (result) {
+        case OrderOptions.orderAz:
+          contacts.sort((a, b) {
+            if (a.name == null || b.name == null) {
+              return -1;
+            } else {
+              return a.name!.toLowerCase().compareTo(b.name!.toLowerCase());
+            }
+          });
+          break;
+        case OrderOptions.orderZa:
+          contacts.sort((a, b) {
+            if (a.name == null || b.name == null) {
+              return -1;
+            } else {
+              return b.name!.toLowerCase().compareTo(a.name!.toLowerCase());
+            }
+          });
+          break;
+      }
     });
   }
 }
