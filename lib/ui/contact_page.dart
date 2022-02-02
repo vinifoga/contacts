@@ -16,6 +16,7 @@ class _ContactPageState extends State<ContactPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _nameFocus = FocusNode();
   late bool _userEdited = false;
   Contact? _editedContact;
 
@@ -26,9 +27,9 @@ class _ContactPageState extends State<ContactPage> {
       _editedContact = Contact();
     } else {
       _editedContact = widget.contact;
-      _nameController.text = _editedContact!.name!;
-      _emailController.text = _editedContact!.email!;
-      _phoneController.text = _editedContact!.phone!;
+      _nameController.text = _editedContact!.name != null ? _editedContact!.name! : "";
+      _emailController.text = _editedContact!.email != null ? _editedContact!.email! : "";
+      _phoneController.text = _editedContact!.phone != null ? _editedContact!.phone! : "";
     }
   }
 
@@ -41,7 +42,13 @@ class _ContactPageState extends State<ContactPage> {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          if(_editedContact?.name != null &&  _editedContact!.name!.isNotEmpty){
+            Navigator.pop(context, _editedContact);
+          } else {
+            FocusScope.of(context).requestFocus(_nameFocus);
+          }
+        },
         child: const Icon(Icons.save),
         backgroundColor: Colors.red,
       ),
@@ -65,8 +72,10 @@ class _ContactPageState extends State<ContactPage> {
             ),
             TextField(
               controller: _nameController,
+              focusNode: _nameFocus,
               decoration: const InputDecoration(
                 labelText: "Nome",
+                hintText: "Insira seu nome"
               ),
               onChanged: (text) {
                 _userEdited = true;
