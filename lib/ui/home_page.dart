@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:contacts/helpers/contact_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -9,29 +11,92 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   ContactHelper helper = ContactHelper();
-
+  List<Contact> contacts = [];
 
   @override
   void initState() {
     super.initState();
-    Contact c = Contact();
-    c.name = "Loki Laufeyson";
-    c.email = "loki@gmail.com";
-    c.phone = "1147859654";
-    c.img = "imgTest";
-
-    helper.saveContact(c);
-
     helper.getAllContact().then((list) {
-      print(list);
+      setState(() {
+        contacts = list;
+      });
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Contacts"),
+        backgroundColor: Colors.red,
+        centerTitle: true,
+      ),
+      backgroundColor: Colors.grey[200],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.red,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(10.0),
+        itemCount: contacts.length,
+        itemBuilder: (context, index) {
+          return _contacCard(context, index);
+        },
+      ),
+    );
+  }
+
+  Widget _contacCard(BuildContext context, int index) {
+    return GestureDetector(
+      child: Card(
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            children: [
+              Container(
+                width: 80.0,
+                height: 80.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: contacts[index].img != null
+                          ? FileImage(File(contacts[index].img!))
+                          : AssetImage("images/user.png") as ImageProvider),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      contacts[index].name ?? "",
+                      style: const TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      contacts[index].email ?? "",
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                      ),
+                    ),
+                    Text(
+                      contacts[index].phone ?? "",
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
